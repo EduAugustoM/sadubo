@@ -1,0 +1,41 @@
+{
+  "best_model": "Decision Tree",
+  "models": {
+    "Decision Tree": {
+      "cv_f1_macro_mean": 0.757216,
+      "cv_f1_macro_std": 0.021537,
+      "test_accuracy": 0.877,
+      "test_precision_macro": 0.742778,
+      "test_recall_macro": 0.745811,
+      "test_f1_macro": 0.743732,
+      "training_time_seconds": 1.36
+    },
+    "Random Forest": {
+      "cv_f1_macro_mean": 0.745606,
+      "cv_f1_macro_std": 0.019809,
+      "test_accuracy": 0.8715,
+      "test_precision_macro": 0.727463,
+      "test_recall_macro": 0.73404,
+      "test_f1_macro": 0.724756,
+      "training_time_seconds": 3.78
+    },
+    "SVM (RBF)": {
+      "cv_f1_macro_mean": 0.607361,
+      "cv_f1_macro_std": 0.011765,
+      "test_accuracy": 0.7625,
+      "test_precision_macro": 0.613905,
+      "test_recall_macro": 0.582794,
+      "test_f1_macro": 0.592705,
+      "training_time_seconds": 10.14
+    },
+    "XGBoost": {
+      "cv_f1_macro_mean": 0.749796,
+      "cv_f1_macro_std": 0.022281,
+      "test_accuracy": 0.877,
+      "test_precision_macro": 0.726651,
+      "test_recall_macro": 0.73093,
+      "test_f1_macro": 0.727986,
+      "training_time_seconds": 4.98
+    }
+  }
+}
