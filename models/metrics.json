@@ -8,7 +8,7 @@
       "test_precision_macro": 0.742778,
       "test_recall_macro": 0.745811,
       "test_f1_macro": 0.743732,
-      "training_time_seconds": 1.36
+      "training_time_seconds": 1.34
     },
     "Random Forest": {
       "cv_f1_macro_mean": 0.745606,
@@ -17,7 +17,7 @@
       "test_precision_macro": 0.727463,
       "test_recall_macro": 0.73404,
       "test_f1_macro": 0.724756,
-      "training_time_seconds": 3.78
+      "training_time_seconds": 3.52
     },
     "SVM (RBF)": {
       "cv_f1_macro_mean": 0.607361,
@@ -26,7 +26,7 @@
       "test_precision_macro": 0.613905,
       "test_recall_macro": 0.582794,
       "test_f1_macro": 0.592705,
-      "training_time_seconds": 10.14
+      "training_time_seconds": 9.87
     },
     "XGBoost": {
       "cv_f1_macro_mean": 0.749796,
@@ -35,7 +35,7 @@
       "test_precision_macro": 0.726651,
       "test_recall_macro": 0.73093,
       "test_f1_macro": 0.727986,
-      "training_time_seconds": 4.98
+      "training_time_seconds": 4.6
     }
   }
 }

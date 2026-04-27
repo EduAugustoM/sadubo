@@ -4,7 +4,7 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-red.svg)](https://streamlit.io)
 [![License](https://img.shields.io/badge/License-Academic-green.svg)]()
 
-> **TCC — Bacharelado em Engenharia Agrícola | UEG — UnU Santa Helena de Goiás | 2026**
+> **TCC — Bacharelado em Sistemas de Informação | UEG — UnU Santa Helena de Goiás | 2026**
 > 
 > Autor: Eduardo Augusto de Oliveira Mendes | Orientadora: Prof.ª Me. Pollyana Queiroz
 
@@ -136,5 +136,5 @@ Projeto acadêmico — uso educacional.
 - **Autor:** Eduardo Augusto de Oliveira Mendes
 - **Orientadora:** Prof.ª Me. Pollyana Queiroz
 - **Instituição:** Universidade Estadual de Goiás (UEG) — UnU Santa Helena de Goiás
-- **Curso:** Bacharelado em Engenharia Agrícola
+- **Curso:** Bacharelado em Sistemas de Informação
 - **Ano:** 2026

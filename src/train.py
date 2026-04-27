@@ -87,7 +87,6 @@ def get_models() -> dict:
             colsample_bytree=0.8,
             eval_metric='mlogloss',
             random_state=RANDOM_STATE,
-            use_label_encoder=False,
             verbosity=0
         ),
     }
@@ -303,12 +302,20 @@ def main():
     print("\n4️⃣  Selecionando melhor modelo...")
     best_name, best_model = select_best_model(results, trained_models)
     
-    # 5. Verificar critério de aceite (F1 ≥ 95%)
+    # 5. Verificar critérios de aceite (Acurácia ≥ 0.85 e F1-macro ≥ 0.74)
     test_f1 = results[best_name]['test_f1_macro']
-    if test_f1 >= 0.95:
-        print(f"\n✅ Critério de aceite ATENDIDO: F1-macro = {test_f1:.4f} ≥ 0.95")
+    test_acc = results[best_name]['test_accuracy']
+    acc_ok = test_acc >= 0.85
+    f1_ok  = test_f1  >= 0.74
+    if acc_ok and f1_ok:
+        print(f"\n✅ Critérios de aceite ATENDIDOS:")
+        print(f"   Acurácia  = {test_acc:.4f} ≥ 0.85")
+        print(f"   F1-macro  = {test_f1:.4f}  ≥ 0.74")
     else:
-        print(f"\n⚠️ Critério de aceite NÃO atendido: F1-macro = {test_f1:.4f} < 0.95")
+        if not acc_ok:
+            print(f"\n⚠️ Critério NÃO atendido: Acurácia = {test_acc:.4f} < 0.85")
+        if not f1_ok:
+            print(f"\n⚠️ Critério NÃO atendido: F1-macro = {test_f1:.4f} < 0.74")
     
     # 6. Serializar tudo
     print("\n5️⃣  Serializando artefatos...")

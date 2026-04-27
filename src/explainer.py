@@ -254,11 +254,11 @@ def generate_text_explanation(explainer, X_processed: pd.DataFrame,
         
         if i == 0:
             parts.append(
-                f"o **{feature_label}** (valor: {raw_value})"
+                f"o {feature_label} (valor: {raw_value}), que influenciou {direction} a recomendação"
             )
         else:
             parts.append(
-                f"o **{feature_label}** ({raw_value})"
+                f"o {feature_label} ({raw_value}) — impacto {direction}"
             )
     
     # Calcular contribuição percentual das top features
@@ -269,19 +269,18 @@ def generate_text_explanation(explainer, X_processed: pd.DataFrame,
         pct = 0
     
     # Montar texto final
-    connector = ", seguido pel" + ("o " if top_n <= 2 else "os fatores ")
     if len(parts) == 1:
         features_text = parts[0]
     elif len(parts) == 2:
-        features_text = f"{parts[0]}, seguido pelo {parts[1]}"
+        features_text = f"{parts[0]}, seguido por {parts[1]}"
     else:
         features_text = f"{parts[0]}, seguido por {', '.join(parts[1:-1])} e {parts[-1]}"
     
     text = (
-        f"O fator que mais influenciou a recomendação de **{fertilizer_name}** "
+        f"O fator que mais influenciou a recomendação de {fertilizer_name} "
         f"foi {features_text}. "
         f"Esses {len(parts)} fatores juntos representam "
-        f"**{pct:.0f}%** da decisão do modelo."
+        f"{pct:.0f}% da decisão do modelo."
     )
     
     return text

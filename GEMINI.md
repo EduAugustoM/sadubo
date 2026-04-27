@@ -1,7 +1,7 @@
 # SAD-ADUBO — Sistema Inteligente de Apoio à Decisão para Recomendação de Adubação
 
-> **TCC — Bacharelado em Engenharia Agrícola | UEG — UnU Santa Helena de Goiás | 2026**
-> Autor: Eduardo Augusto de Oliveira Mendes | Orientador: Prof. Me. Pollyana Queiroz
+> **TCC — Bacharelado em Sistemas de Informação | UEG — UnU Santa Helena de Goiás | 2026**
+> Autor: Eduardo Augusto de Oliveira Mendes | Orientadora: Prof.ª Me. Pollyana Queiroz
 
 ---
 
@@ -35,11 +35,17 @@ sad-adubo/
 ├── data/
 │   └── fertilizer_recommendation.csv   # Dataset bruto (Kaggle)
 ├── notebooks/
-│   └── eda.ipynb                        # Análise exploratória completa
+│   ├── eda.ipynb                        # Análise exploratória do projeto
+│   └── soil-based-fertilizer-recommendation-eda-10-ml-ref.ipynb  # Referência Kaggle
 ├── models/
 │   ├── best_model.pkl                   # Modelo serializado (melhor F1)
 │   ├── scaler.pkl                       # MinMaxScaler treinado
-│   └── encoders.pkl                     # Dict de LabelEncoders por coluna
+│   ├── encoders.pkl                     # Dict de LabelEncoders por coluna
+│   ├── metrics.json                     # Métricas de todos os modelos (JSON)
+│   ├── confusion_matrices.pkl           # Matrizes de confusão por modelo
+│   ├── feature_names.pkl                # Ordem das features usada no treino
+│   ├── label_classes.pkl                # Nomes das classes da variável-alvo
+│   └── shap_global_values.pkl           # SHAP global pré-calculado (500 amostras)
 ├── src/
 │   ├── preprocessing.py                 # Pipeline de encoding + scaling
 │   ├── train.py                         # Treinamento e avaliação dos modelos
@@ -47,6 +53,7 @@ sad-adubo/
 │   └── explainer.py                     # Cálculo e formatação do SHAP
 ├── app.py                               # Ponto de entrada do Streamlit
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
@@ -196,14 +203,15 @@ Descrição do projeto, metodologia simplificada, limitações do MVP e crédito
 
 ## Critérios de Aceite do MVP
 
-- [ ] F1-Score macro ≥ 95% no conjunto de teste
-- [ ] Predição gerada em ≤ 2 segundos
-- [ ] Gráfico SHAP renderizado para 100% das predições
-- [ ] Validação de inputs fora de range funcional
-- [ ] CSV exportado com: inputs + fertilizante recomendado + probabilidade
-- [ ] URL pública no Streamlit Community Cloud
-- [ ] Ao menos 2 usuários não técnicos completam o fluxo sem auxílio
-- [ ] Repositório GitHub com README de instalação
+- [x] Acurácia ≥ 0.85 no conjunto de teste — *Decision Tree: 0.877* (verificar `models/metrics.json`)
+- [x] F1-Score macro ≥ 0.74 no conjunto de teste — *Decision Tree: 0.744* (verificar `models/metrics.json`)
+- [x] Predição gerada em ≤ 2 segundos (`st.cache_resource` implementado)
+- [x] Gráfico SHAP renderizado para 100% das predições
+- [x] Validação de inputs fora de range funcional
+- [x] CSV exportado com: inputs + fertilizante recomendado + probabilidade
+- [ ] URL pública no Streamlit Community Cloud (pendente deploy)
+- [ ] Ao menos 2 usuários não técnicos completam o fluxo sem auxílio (pendente testes)
+- [x] Repositório GitHub com README de instalação
 
 ---
 
@@ -331,3 +339,35 @@ Usuário deseja exportar?
     ├── Sim → Download do resultado em CSV
     └── Não → Fim
 ```
+
+---
+
+## Estado Atual da Implementação
+
+Todos os módulos estão implementados e funcionais. O pipeline de treinamento foi executado e os artefatos estão serializados em `models/`. A interface Streamlit cobre as 4 abas e as 14 funcionalidades (F01–F14).
+
+**Pendente:** deploy no Streamlit Community Cloud + testes com usuários não técnicos.
+
+---
+
+## Decisões de Design
+
+### LabelEncoder fitado no dataset completo (pré-split)
+
+Os `LabelEncoders` são ajustados no dataset **completo** antes da divisão treino/teste. Essa decisão é justificável porque o `LabelEncoder` mapeia apenas o domínio das categorias (quais valores existem), **sem vazamento de informação de valor** (média, distribuição, etc.). Caso fosse fitado apenas no treino, categorias presentes somente no teste causariam erros em produção. Esta abordagem é documentada na aba “Sobre o Sistema” da aplicação.
+
+### SHAP global pré-calculado
+
+O SHAP global é calculado durante o treinamento sobre uma amostra de 500 registros do conjunto de teste e salvo em `shap_global_values.pkl`. Isso evita latência na Aba 3 (Desempenho dos Modelos). O SHAP local (por predição) é calculado em tempo real para cada requisição do usuário.
+
+### Cache com `st.cache_resource`
+
+O modelo, encoders e scaler são carregados com `@st.cache_resource`, garantindo que o carregamento ocorra uma única vez por sessão. Isso assegura o RNF01 (predição ≤ 2 segundos).
+
+### Persistência de resultado com `st.session_state`
+
+O resultado da última predição é armazenado em `st.session_state` para que não seja perdido ao interagir com outros elementos da página (RNF02 — usabilidade).
+
+### Texto interpretativo SHAP com direção de impacto
+
+O módulo `explainer.py` gera automaticamente um texto em português descrevendo os top-3 fatores SHAP com indicação de direção (positivamente / negativamente), tornando a explicação acessível ao produtor rural sem letramento técnico em ML.

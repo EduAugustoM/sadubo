@@ -191,6 +191,16 @@ st.markdown("""
 
 
 # =============================================================================
+# Inicialização do Session State
+# =============================================================================
+
+if 'last_result' not in st.session_state:
+    st.session_state['last_result'] = None
+if 'last_user_input' not in st.session_state:
+    st.session_state['last_user_input'] = None
+
+
+# =============================================================================
 # Abas
 # =============================================================================
 
@@ -348,7 +358,7 @@ with tab1:
     with col_btn_center:
         submit_btn = st.button(
             "🔍 Gerar Recomendação",
-            use_container_width=True,
+            width='stretch',
             type="primary"
         )
     
@@ -365,91 +375,99 @@ with tab1:
             try:
                 artifacts = cached_load_artifacts()
                 result = get_recommendation(user_input, artifacts)
-                
-                # Card de resultado
-                st.markdown(f"""
-                <div class="result-card">
-                    <h2>🌿 {result['fertilizer']}</h2>
-                    <div class="confidence">
-                        Confiança: {result['confidence']:.1f}%
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Gráfico SHAP Waterfall
-                st.markdown("### 📊 Por que este fertilizante?")
-                
-                explainer = cached_create_explainer(artifacts['model'])
-                fig_waterfall = plot_waterfall(
-                    explainer,
-                    result['X_processed'],
-                    result['predicted_class_index'],
-                    result['fertilizer']
-                )
-                st.pyplot(fig_waterfall)
-                plt.close(fig_waterfall)
-                
-                # Texto interpretativo
-                st.markdown("### 📝 Explicação")
-                text_explanation = generate_text_explanation(
-                    explainer,
-                    result['X_processed'],
-                    result['predicted_class_index'],
-                    user_input,
-                    result['fertilizer']
-                )
-                st.markdown(f"""
-                <div class="info-box">
-                    {text_explanation}
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Top 5 probabilidades
-                st.markdown("### 📈 Probabilidades por Fertilizante")
-                top_probs = dict(list(result['all_probabilities'].items())[:5])
-                df_probs = pd.DataFrame({
-                    'Fertilizante': top_probs.keys(),
-                    'Probabilidade (%)': top_probs.values()
-                })
-                fig_probs = px.bar(
-                    df_probs, x='Probabilidade (%)', y='Fertilizante',
-                    orientation='h',
-                    color='Probabilidade (%)',
-                    color_continuous_scale='Blues',
-                    text='Probabilidade (%)'
-                )
-                fig_probs.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
-                fig_probs.update_layout(
-                    showlegend=False,
-                    coloraxis_showscale=False,
-                    yaxis={'categoryorder': 'total ascending'},
-                    height=300,
-                    margin=dict(l=0, r=60, t=10, b=0)
-                )
-                st.plotly_chart(fig_probs, use_container_width=True)
-                
-                # Botão de download CSV
-                st.markdown("### 📥 Exportar Resultado")
-                csv_data = {**user_input}
-                csv_data['Fertilizante_Recomendado'] = result['fertilizer']
-                csv_data['Confianca_%'] = result['confidence']
-                df_export = pd.DataFrame([csv_data])
-                csv_str = df_export.to_csv(index=False).encode('utf-8')
-                
-                st.download_button(
-                    label="📥 Baixar resultado em CSV",
-                    data=csv_str,
-                    file_name="recomendacao_adubacao.csv",
-                    mime="text/csv",
-                    use_container_width=True
-                )
-                
+                # Persiste no session_state
+                st.session_state['last_result'] = result
+                st.session_state['last_user_input'] = user_input.copy()
             except Exception as e:
                 st.error(f"❌ Erro ao gerar recomendação: {str(e)}")
                 st.info(
                     "Certifique-se de que o modelo foi treinado. "
                     "Execute: `python src/train.py`"
                 )
+    
+    # Exibe o resultado sempre que houver um resultado salvo
+    if st.session_state['last_result'] is not None:
+        result = st.session_state['last_result']
+        user_input_saved = st.session_state['last_user_input']
+        
+        # Card de resultado
+        st.markdown(f"""
+        <div class="result-card">
+            <h2>🌿 {result['fertilizer']}</h2>
+            <div class="confidence">
+                Confiança: {result['confidence']:.1f}%
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Gráfico SHAP Waterfall
+        st.markdown("### 📊 Por que este fertilizante?")
+        
+        artifacts = cached_load_artifacts()
+        explainer = cached_create_explainer(artifacts['model'])
+        fig_waterfall = plot_waterfall(
+            explainer,
+            result['X_processed'],
+            result['predicted_class_index'],
+            result['fertilizer']
+        )
+        st.pyplot(fig_waterfall)
+        plt.close(fig_waterfall)
+        
+        # Texto interpretativo
+        st.markdown("### 📝 Explicação")
+        text_explanation = generate_text_explanation(
+            explainer,
+            result['X_processed'],
+            result['predicted_class_index'],
+            user_input_saved,
+            result['fertilizer']
+        )
+        st.markdown(f"""
+        <div class="info-box">
+            {text_explanation}
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Top 5 probabilidades
+        st.markdown("### 📈 Probabilidades por Fertilizante")
+        top_probs = dict(list(result['all_probabilities'].items())[:5])
+        df_probs = pd.DataFrame({
+            'Fertilizante': top_probs.keys(),
+            'Probabilidade (%)': top_probs.values()
+        })
+        fig_probs = px.bar(
+            df_probs, x='Probabilidade (%)', y='Fertilizante',
+            orientation='h',
+            color='Probabilidade (%)',
+            color_continuous_scale='Blues',
+            text='Probabilidade (%)'
+        )
+        fig_probs.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+        fig_probs.update_layout(
+            showlegend=False,
+            coloraxis_showscale=False,
+            yaxis={'categoryorder': 'total ascending'},
+            height=300,
+            margin=dict(l=0, r=60, t=10, b=0)
+        )
+        st.plotly_chart(fig_probs, width='stretch')
+        
+        # Botão de download CSV
+        st.markdown("### 📥 Exportar Resultado")
+        csv_data = {**user_input_saved}
+        csv_data['Fertilizante_Recomendado'] = result['fertilizer']
+        csv_data['Confianca_%'] = result['confidence']
+        df_export = pd.DataFrame([csv_data])
+        csv_str = df_export.to_csv(index=False).encode('utf-8')
+        
+        st.download_button(
+            label="📥 Baixar resultado em CSV",
+            data=csv_str,
+            file_name="recomendacao_adubacao.csv",
+            mime="text/csv",
+            width='stretch'
+        )
 
 
 # =============================================================================
@@ -494,7 +512,7 @@ with tab2:
         height=450,
         margin=dict(b=100)
     )
-    st.plotly_chart(fig_classes, use_container_width=True)
+    st.plotly_chart(fig_classes, width='stretch')
     
     st.markdown("---")
     
@@ -513,7 +531,7 @@ with tab2:
         aspect='auto'
     )
     fig_corr.update_layout(height=600)
-    st.plotly_chart(fig_corr, use_container_width=True)
+    st.plotly_chart(fig_corr, width='stretch')
     
     st.markdown("---")
     
@@ -541,7 +559,7 @@ with tab2:
         height=500,
         margin=dict(b=100)
     )
-    st.plotly_chart(fig_box, use_container_width=True)
+    st.plotly_chart(fig_box, width='stretch')
 
 
 # =============================================================================
@@ -580,7 +598,7 @@ with tab3:
             return [''] * len(row)
         
         styled_df = df_metrics.style.apply(highlight_best, axis=1)
-        st.dataframe(styled_df, use_container_width=True, hide_index=True)
+        st.dataframe(styled_df, width='stretch', hide_index=True)
         
         st.success(f"🏆 **Melhor modelo selecionado:** {best_model_name}")
         
@@ -618,7 +636,7 @@ with tab3:
             legend=dict(orientation='h', yanchor='bottom', y=1.02,
                         xanchor='right', x=1)
         )
-        st.plotly_chart(fig_compare, use_container_width=True)
+        st.plotly_chart(fig_compare, width='stretch')
         
         st.markdown("---")
         
@@ -654,7 +672,7 @@ with tab3:
             xaxis_tickangle=-45,
             margin=dict(b=100)
         )
-        st.plotly_chart(fig_cm, use_container_width=True)
+        st.plotly_chart(fig_cm, width='stretch')
         
         st.markdown("---")
         
@@ -699,7 +717,7 @@ with tab4:
         o fertilizante mais adequado com base em dados de solo, clima e manejo agrícola.
         
         O sistema foi desenvolvido como **Trabalho de Conclusão de Curso (TCC)** 
-        do Bacharelado em Engenharia Agrícola na **Universidade Estadual de Goiás 
+        do Bacharelado em Sistemas de Informação na **Universidade Estadual de Goiás 
         (UEG)** — Unidade Universitária de Santa Helena de Goiás.
         
         #### 📋 Metodologia
@@ -743,7 +761,7 @@ with tab4:
         #### 📚 Informações Acadêmicas
         
         **Curso:**  
-        Bacharelado em Engenharia Agrícola
+        Bacharelado em Sistemas de Informação
         
         **Instituição:**  
         Universidade Estadual de Goiás (UEG)  
@@ -786,7 +804,7 @@ with tab4:
 st.markdown("""
 <div class="footer">
     <p>
-        SAD-ADUBO v1.0 — TCC Engenharia Agrícola | UEG 2026<br>
+        SAD-ADUBO v1.0 — TCC Sistemas de Informação | UEG 2026<br>
         Desenvolvido por Eduardo Augusto de Oliveira Mendes
     </p>
 </div>
