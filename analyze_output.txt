@@ -1,0 +1,51 @@
+=== Dataset Info ===
+Shape: (10000, 20)
+Attributes: 20
+Records: 10000
+
+=== Target Classes (Fertilizers) ===
+['MOP', 'Urea', 'Zinc Sulphate', 'Compost', 'NPK', 'DAP', 'SSP']
+
+=== Crops ===
+['Cotton', 'Maize', 'Wheat', 'Potato', 'Rice', 'Sugarcane', 'Tomato']
+
+=== Nulls ===
+{'Soil_Type': 0, 'Soil_pH': 0, 'Soil_Moisture': 0, 'Organic_Carbon': 0, 'Electrical_Conductivity': 0, 'Nitrogen_Level': 0, 'Phosphorus_Level': 0, 'Potassium_Level': 0, 'Temperature': 0, 'Humidity': 0, 'Rainfall': 0, 'Crop_Type': 0, 'Crop_Growth_Stage': 0, 'Season': 0, 'Irrigation_Type': 0, 'Previous_Crop': 0, 'Region': 0, 'Fertilizer_Used_Last_Season': 0, 'Yield_Last_Season': 0, 'Recommended_Fertilizer': 0}
+
+=== Duplicates ===
+0
+
+=== Dtypes ===
+{'Soil_Type': <StringDtype(na_value=nan)>, 'Soil_pH': dtype('float64'), 'Soil_Moisture': dtype('float64'), 'Organic_Carbon': dtype('float64'), 'Electrical_Conductivity': dtype('float64'), 'Nitrogen_Level': dtype('int64'), 'Phosphorus_Level': dtype('int64'), 'Potassium_Level': dtype('int64'), 'Temperature': dtype('float64'), 'Humidity': dtype('float64'), 'Rainfall': dtype('float64'), 'Crop_Type': <StringDtype(na_value=nan)>, 'Crop_Growth_Stage': <StringDtype(na_value=nan)>, 'Season': <StringDtype(na_value=nan)>, 'Irrigation_Type': <StringDtype(na_value=nan)>, 'Previous_Crop': <StringDtype(na_value=nan)>, 'Region': <StringDtype(na_value=nan)>, 'Fertilizer_Used_Last_Season': dtype('float64'), 'Yield_Last_Season': dtype('float64'), 'Recommended_Fertilizer': <StringDtype(na_value=nan)>}
+
+=== Describe ===
+            Soil_pH  Soil_Moisture  Organic_Carbon  Electrical_Conductivity  Nitrogen_Level  Phosphorus_Level  Potassium_Level   Temperature      Humidity      Rainfall  Fertilizer_Used_Last_Season  Yield_Last_Season
+count  10000.000000   10000.000000    10000.000000             10000.000000    10000.000000      10000.000000     10000.000000  10000.000000  10000.000000  10000.000000                 10000.000000       10000.000000
+mean       6.485728      35.411531        0.844731                 1.543156       88.995000         48.965100        64.147000     25.058906     60.093727   1588.085798                   176.165508           4.531666
+std        1.152964      14.413002        0.372406                 0.839514       40.336674         23.195588        31.867211      8.601550     17.386120    810.992404                    72.235790           2.013522
+min        4.500000      10.000000        0.200000                 0.100000       20.000000         10.000000        10.000000     10.000000     30.010000    200.080000                    50.010000           1.000000
+25%        5.490000      23.030000        0.520000                 0.820000       54.000000         29.000000        37.000000     17.580000     44.925000    874.780000                   113.175000           2.780000
+50%        6.460000      35.645000        0.850000                 1.530000       89.000000         49.000000        64.000000     25.085000     60.345000   1594.295000                   176.835000           4.550000
+75%        7.490000      47.662500        1.160000                 2.270000      124.000000         69.000000        92.000000     32.502500     75.420000   2283.782500                   239.232500           6.260000
+max        8.500000      60.000000        1.500000                 3.000000      159.000000         89.000000       119.000000     40.000000     89.990000   2999.980000                   300.000000           8.000000
+
+=== Categorical Value Counts ===
+--- Soil_Type ---
+{'Sandy': 2536, 'Silt': 2501, 'Loamy': 2486, 'Clay': 2477}
+--- Crop_Type ---
+{'Wheat': 1467, 'Tomato': 1451, 'Rice': 1429, 'Sugarcane': 1428, 'Potato': 1425, 'Maize': 1424, 'Cotton': 1376}
+--- Crop_Growth_Stage ---
+{'Harvest': 2547, 'Vegetative': 2524, 'Flowering': 2499, 'Sowing': 2430}
+--- Season ---
+{'Kharif': 3363, 'Rabi': 3337, 'Zaid': 3300}
+--- Irrigation_Type ---
+{'Sprinkler': 2531, 'Rainfed': 2526, 'Drip': 2499, 'Canal': 2444}
+--- Previous_Crop ---
+{'Cotton': 1492, 'Maize': 1458, 'Rice': 1446, 'Sugarcane': 1433, 'Wheat': 1418, 'Potato': 1387, 'Tomato': 1366}
+--- Region ---
+{'West': 2026, 'North': 2012, 'East': 1998, 'South': 1990, 'Central': 1974}
+--- Recommended_Fertilizer ---
+{'Urea': 3101, 'DAP': 2920, 'MOP': 1408, 'Compost': 996, 'Zinc Sulphate': 752, 'NPK': 641, 'SSP': 182}
+
+=== Target Distribution ===
+{'Urea': 0.3101, 'DAP': 0.292, 'MOP': 0.1408, 'Compost': 0.0996, 'Zinc Sulphate': 0.0752, 'NPK': 0.0641, 'SSP': 0.0182}
